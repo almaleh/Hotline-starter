@@ -1,0 +1,16 @@
+PODS:
+  - SinchRTC (3.12.4)
+
+DEPENDENCIES:
+  - SinchRTC
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - SinchRTC
+
+SPEC CHECKSUMS:
+  SinchRTC: 1b46443f85beeac406b0fd97eb98e1912c4e9dd8
+
+PODFILE CHECKSUM: aeef9535ad1dcc5212dd1f9929b1b6157b7ddea6
+
+COCOAPODS: 1.5.2
