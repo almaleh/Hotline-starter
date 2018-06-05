@@ -64,7 +64,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func initSinchClientWithUserID (userID: String) {
         if client == nil {
-            client = Sinch.client(withApplicationKey: "b7024be0-882a-4bc4-bd3f-c13a054950d5", applicationSecret: "LXYRw+wLtE+gUJhFoLy5mQ==", environmentHost: "sandbox.sinch.com", userId: userID)
+            client = Sinch.client(withApplicationKey: APPLICATION_KEY, applicationSecret: APPLICATION_SECRET, environmentHost: "sandbox.sinch.com", userId: userID)
             client?.setSupportCalling(true)
             client?.setSupportMessaging(false)
             client?.enableManagedPushNotifications()
