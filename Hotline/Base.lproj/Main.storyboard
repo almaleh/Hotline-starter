@@ -115,48 +115,31 @@
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <segue destination="8Il-ee-Y6u" kind="unwind" identifier="CallBtn" unwindAction="unwindForNewCall:" id="b3E-8z-huB"/>
+                                </connections>
                             </textField>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="cdq-Dr-urZ">
-                                <rect key="frame" x="100" y="182" width="51" height="31"/>
-                            </switch>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="txK-fE-MYK">
-                                <rect key="frame" x="36" y="134" width="141" height="29"/>
-                                <segments>
-                                    <segment title="Incoming"/>
-                                    <segment title="Outgoing"/>
-                                </segments>
-                            </segmentedControl>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Video" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NDy-uc-tbX">
-                                <rect key="frame" x="36" y="187" width="44" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GYV-sf-lof">
+                                <rect key="frame" x="83" y="198.5" width="209" height="52"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="33"/>
+                                <state key="normal" title="Call me maybe"/>
+                                <connections>
+                                    <action selector="CallBtn:" destination="fcn-DG-LMI" eventType="touchUpInside" id="GvK-Ab-Yuy"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="6Pg-Br-5bk" firstAttribute="leading" secondItem="Q1Z-S4-Tm4" secondAttribute="leadingMargin" constant="20" id="2pD-qd-YhE"/>
-                            <constraint firstItem="cdq-Dr-urZ" firstAttribute="top" secondItem="txK-fE-MYK" secondAttribute="bottom" constant="20" id="RhM-JI-EgE"/>
-                            <constraint firstItem="cdq-Dr-urZ" firstAttribute="leading" secondItem="NDy-uc-tbX" secondAttribute="trailing" constant="20" id="Zoa-xb-xyE"/>
+                            <constraint firstItem="GYV-sf-lof" firstAttribute="centerX" secondItem="Q1Z-S4-Tm4" secondAttribute="centerX" id="6bh-8e-39m"/>
+                            <constraint firstItem="GYV-sf-lof" firstAttribute="centerY" secondItem="Q1Z-S4-Tm4" secondAttribute="centerY" constant="-109" id="Qs7-IV-6vr"/>
                             <constraint firstItem="6Pg-Br-5bk" firstAttribute="top" secondItem="tMe-sD-kau" secondAttribute="bottom" constant="20" id="cpy-DR-TQ7"/>
-                            <constraint firstItem="NDy-uc-tbX" firstAttribute="centerY" secondItem="cdq-Dr-urZ" secondAttribute="centerY" id="dyI-Nj-ELR"/>
                             <constraint firstAttribute="trailingMargin" secondItem="6Pg-Br-5bk" secondAttribute="trailing" constant="20" id="fWz-kH-MSA"/>
-                            <constraint firstItem="NDy-uc-tbX" firstAttribute="leading" secondItem="Q1Z-S4-Tm4" secondAttribute="leadingMargin" constant="20" id="k9o-Rr-wUK"/>
-                            <constraint firstItem="txK-fE-MYK" firstAttribute="top" secondItem="6Pg-Br-5bk" secondAttribute="bottom" constant="20" id="mm5-tP-Yry"/>
-                            <constraint firstItem="txK-fE-MYK" firstAttribute="leading" secondItem="6Pg-Br-5bk" secondAttribute="leading" id="pWZ-XB-d3m"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="New Call" id="uAo-xk-FCg">
-                        <barButtonItem key="rightBarButtonItem" style="done" systemItem="done" id="V6H-T0-QEu">
-                            <connections>
-                                <segue destination="8Il-ee-Y6u" kind="unwind" unwindAction="unwindForNewCall:" id="FiT-Cv-UYU"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="New Call" id="uAo-xk-FCg"/>
                     <connections>
                         <outlet property="handleTextField" destination="6Pg-Br-5bk" id="4o9-gM-Bqh"/>
-                        <outlet property="incomingSegmentedControl" destination="txK-fE-MYK" id="pTR-fq-ctX"/>
-                        <outlet property="videoSwitch" destination="cdq-Dr-urZ" id="sqR-kD-eiO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mQF-ZR-dgu" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -43,17 +43,9 @@ class CallsViewController: UITableViewController {
     
     @IBAction private func unwindForNewCall(_ segue: UIStoryboardSegue) {       
         guard let newCallController = segue.source as? NewCallViewController else { return }
-        guard let handle = newCallController.handle else { return }
-        let incoming = newCallController.incoming
-        let videoEnabled = newCallController.videoEnabled
-
-        if incoming {
-//            DispatchQueue.main.asyncAfter(wallDeadline: DispatchWallTime.now() + 1.5) {
-//                AppDelegate.shared.displayIncomingCall(uuid: UUID(), handle: handle)
-//            }
-        } else {
-            callManager.startCall(handle: handle, videoEnabled: videoEnabled)
-        }
+        guard let handle = newCallController.handle, handle != "" else { return }
+        callManager.startCall(handle: handle)
+    
     }
 }
 

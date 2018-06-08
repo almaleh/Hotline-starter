@@ -47,6 +47,11 @@ extension SINCall {
     }
 }
 
+extension Notification.Name {
+    static let SINCallStatusChange = Notification.Name("SINCallStatusChangeNotification")
+}
+
+
 //class Call {
 //    
 //    let uuid: UUID

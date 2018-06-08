@@ -23,7 +23,7 @@
 import Foundation
 import CallKit
 
-class CallManager {
+class CallManager: NSObject {
     
     var callsChangedHandler: (() -> Void)?
     var client: SINClient
@@ -32,8 +32,16 @@ class CallManager {
     
     private let callController = CXCallController()
     
+    private var currentCall: SINCall?
+    
+    var currentCallStatus: SINCallState {
+        return currentCall?.state ?? SINCallState.ended
+    }
+    
     init(client: SINClient) {
         self.client = client
+        super.init()
+        
     }
     
     func callWithUUID(uuid: UUID) -> SINCall? {
@@ -43,11 +51,16 @@ class CallManager {
         return calls[index]
     }
     
-    func add(call: SINCall) {
+    func addCall() {
+        if let call = currentCall {
+            calls.append(call)
+            currentCall = nil
+            callsChangedHandler?()
+        }
+    }
+    
+    func addIncoming(call: SINCall) {
         calls.append(call)
-//        call.stateChanged = { [unowned self] in
-//            self.callsChangedHandler?()
-//        }
         callsChangedHandler?()
     }
     
@@ -63,12 +76,8 @@ class CallManager {
     }
     
     func end(call: SINCall) {
-        guard let uuid = UUID(uuidString: call.callId) else { return }
-        
-        let endCallAction = CXEndCallAction(call: uuid)
-        
+        let endCallAction = CXEndCallAction(call: call.uuid)
         let transaction = CXTransaction(action: endCallAction)
-        
         requestTransaction(transaction)
     }
     
@@ -90,14 +99,16 @@ class CallManager {
         requestTransaction(transaction)
     }
     
-    func startCall(handle: String, videoEnabled: Bool) {
-        // TODO : add Sinch
+    func startCall(handle: String) {
         
-        client.call().callUser(withId: handle)
+        currentCall = client.call().callUser(withId: handle)
+        guard let uuid = UUID(uuidString: currentCall?.callId ?? "" ) else {
+            return
+        }
+        
         let handle = CXHandle(type: .phoneNumber, value: handle)
-        let startCallAction = CXStartCallAction(call: UUID(), handle: handle)
+        let startCallAction = CXStartCallAction(call: uuid, handle: handle)
         
-        startCallAction.isVideo = videoEnabled
         let transaction = CXTransaction(action: startCallAction)
         
         requestTransaction(transaction)

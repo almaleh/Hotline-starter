@@ -10,6 +10,7 @@
 		280DDD4620C4961100AAA5A1 /* AudioControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280DDD4520C4961100AAA5A1 /* AudioControllerDelegate.swift */; };
 		285B694920C6352900F12B29 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 285B694820C6352900F12B29 /* Secrets.swift */; };
 		28B7B74F20BCFE4D00ED4CA4 /* ProviderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B7B74E20BCFE4D00ED4CA4 /* ProviderDelegate.swift */; };
+		28EB8AF120C9FC4300CF4A95 /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EB8AF020C9FC4300CF4A95 /* PushKit.framework */; };
 		BB24136D1E16E45600D8285D /* CallTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB24136C1E16E45600D8285D /* CallTableViewCell.swift */; };
 		BB5C8C8F1E0AE13300029D74 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5C8C8E1E0AE13300029D74 /* AppDelegate.swift */; };
 		BB5C8C941E0AE13300029D74 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB5C8C921E0AE13300029D74 /* Main.storyboard */; };
@@ -42,6 +43,7 @@
 		285B694820C6352900F12B29 /* Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
 		289FC5E720C46DF400176B4A /* Hotline.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Hotline.entitlements; sourceTree = "<group>"; };
 		28B7B74E20BCFE4D00ED4CA4 /* ProviderDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderDelegate.swift; sourceTree = "<group>"; };
+		28EB8AF020C9FC4300CF4A95 /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		6AC1A748DB68823FDB6D7D29 /* Pods-Hotline.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hotline.release.xcconfig"; path = "Pods/Target Support Files/Pods-Hotline/Pods-Hotline.release.xcconfig"; sourceTree = "<group>"; };
 		BB24136C1E16E45600D8285D /* CallTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallTableViewCell.swift; sourceTree = "<group>"; };
 		BB5C8C8B1E0AE13300029D74 /* Hotline.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hotline.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -64,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				28EB8AF120C9FC4300CF4A95 /* PushKit.framework in Frameworks */,
 				CCF626604BD5DD0EDC2B71EA /* Pods_Hotline.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -83,6 +86,7 @@
 		6C88923D31EADD0ECDCCA4B4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				28EB8AF020C9FC4300CF4A95 /* PushKit.framework */,
 				D9FDE946AA5FD4BBF7B561E4 /* Pods_Hotline.framework */,
 			);
 			name = Frameworks;
@@ -224,7 +228,7 @@
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
-								enabled = 1;
+								enabled = 0;
 							};
 							com.apple.Push = {
 								enabled = 1;

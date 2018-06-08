@@ -27,7 +27,7 @@ class ProviderDelegate: NSObject {
         self.client = callManager.client
         
         super.init()
-        
+       
         provider.setDelegate(self, queue: nil)
     }
     
@@ -50,10 +50,12 @@ class ProviderDelegate: NSObject {
         
         provider.reportNewIncomingCall(with: uuid, update: update) { error in
             if error == nil {
-                self.callManager.add(call: call)
+                self.callManager.addIncoming(call: call)
             }
         }
     }
+    
+
 }
 
 extension ProviderDelegate: CXProviderDelegate {
@@ -138,9 +140,13 @@ extension ProviderDelegate: CXProviderDelegate {
 //        let call = Call(uuid: action.callUUID, outgoing: true, handle: action.handle.value)
         
 //        configureAudioSession()
+        print(action.callUUID)
+        if callManager.currentCallStatus != .ended {
+            action.fulfill()
+            callManager.addCall()
+        }
+
         
-        guard let call = callManager.callWithUUID(uuid: action.callUUID) else { return }
-        action.fulfill()
 //        call.connectedStateChanged = { [unowned self, unowned call] in
 //            if call.connectedState == .pending {
 //                self.provider.reportOutgoingCall(with: call.uuid, startedConnectingAt: nil)

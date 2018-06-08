@@ -39,7 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
-        user = "qwer"
+        user = "asdf"
         
         initSinchClientWithUserID(userID: user)
         if let client = client, callManager == nil {
@@ -56,7 +56,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // if logged in
         push?.registerUserNotificationSettings()
         initSinchClientWithUserID(userID: user)
-        
         
         return true
     }
