@@ -40,7 +40,3 @@ func configureAudioSession() {
 //func stopAudio() {
 //  print("Stopping audio")
 //}
-
-extension SINCall {
-    
-}

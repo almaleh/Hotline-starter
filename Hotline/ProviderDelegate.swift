@@ -15,8 +15,8 @@ class ProviderDelegate: NSObject {
     
     fileprivate let callManager: CallManager
     fileprivate let provider: CXProvider
-    let acDelegate: AudioControllerDelegate
     var client: SINClient
+    var acDelegate: AudioControllerDelegate
     
     init(callManager: CallManager) {
         self.callManager = callManager
@@ -25,6 +25,7 @@ class ProviderDelegate: NSObject {
         // SINCH STUFF
         self.acDelegate = AudioControllerDelegate()
         self.client = callManager.client
+        client.audioController().delegate = acDelegate
         
         super.init()
        
@@ -54,7 +55,6 @@ class ProviderDelegate: NSObject {
             }
         }
     }
-    
 
 }
 
@@ -81,6 +81,7 @@ extension ProviderDelegate: CXProviderDelegate {
         call.answer()
         
         action.fulfill()
+        callManager.reloadTable?()
     }
     
     func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
@@ -98,36 +99,31 @@ extension ProviderDelegate: CXProviderDelegate {
     func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
         client.call().provider(provider, didActivate: audioSession)
         client.audioController().unmute()
+        callManager.reloadTable?()
     }
     
     func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
         client.audioController().mute()
+        callManager.reloadTable?()
     }
     
-//    func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
-//        guard let call = callManager.callWithUUID(uuid: action.callUUID) else {
-//            action.fail()
-//            return
-//        }
-//
-//        call.state = action.isOnHold ? .held : .active
-//
-//
-//
-//
-//
-//        if call.state == .held {
-//            client.audioController().mute()
-//        } else {
-//            client.audioController().unmute()
-//        }
-//
-//        action.fulfill()
-//    }
+    func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
+        print("Are we holding???: \(action.isOnHold)")
+        if action.isOnHold {
+            client.audioController().mute()
+        } else {
+            client.audioController().unmute()
+            configureAudioSession()
+        }
+
+        action.fulfill()
+        callManager.reloadTable?()
+    }
     
     func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
         if acDelegate.muted {
             client.audioController().unmute()
+            configureAudioSession()
         } else {
             client.audioController().mute()
         }

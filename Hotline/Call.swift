@@ -22,6 +22,7 @@
 
 import Foundation
 
+// CallKit enums
 enum CallState {
     case connecting
     case active
@@ -29,6 +30,7 @@ enum CallState {
     case ended
 }
 
+// CallKit enums
 enum ConnectedState {
     case pending
     case complete

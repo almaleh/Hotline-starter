@@ -32,10 +32,11 @@ class CallTableViewCell: UITableViewCell {
       case .established:
         callStatusLabel.text = "Active"
       case .progressing:
-        callStatusLabel.text = "On Hold"
-      case .progressing:
         callStatusLabel.text = "Connecting..."
+      case .ended:
+        callStatusLabel.text = "Ended"
       default:
+        print(callState.rawValue)
         callStatusLabel.text = "Dialing..."
       }
     }

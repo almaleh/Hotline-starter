@@ -83,6 +83,8 @@ extension AppDelegate: SINClientDelegate, SINCallClientDelegate, SINManagedPushD
     }
     
     func client(_ client: SINCallClient!, didReceiveIncomingCall call: SINCall!) {
+        providerDelegate?.reportIncomingCall(call
+        )
         print("Received a call from: \(call.remoteUserId)")
     }
     

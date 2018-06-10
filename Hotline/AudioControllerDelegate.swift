@@ -14,10 +14,20 @@ class AudioControllerDelegate: NSObject, SINAudioControllerDelegate {
     
     func audioControllerMuted(_ audioController: SINAudioController!) {
         self.muted = true
+        print("Stopping audio")
     }
     
     func audioControllerUnmuted(_ audioController: SINAudioController!) {
         self.muted = false
+        print("Starting audio")
+    }
+    
+    func audioControllerSpeakerEnabled(_ audioController: SINAudioController!) {
+        print("Speaker enabled!")
+    }
+    
+    func audioControllerSpeakerDisabled(_ audioController: SINAudioController!) {
+        print("Speaker disabled!")
     }
     
 }

@@ -25,14 +25,24 @@ import CallKit
 
 class CallManager: NSObject {
     
-    var callsChangedHandler: (() -> Void)?
+    var reloadTable: (() -> Void)?
+    var updateData: (() -> Void)?
     var client: SINClient
+    var audioController: SINAudioController {
+        return client.audioController()
+    }
 
     private(set) var calls = [SINCall]()
     
     private let callController = CXCallController()
     
-    private var currentCall: SINCall?
+    var currentCall: SINCall? {
+        didSet {
+            if currentCall != nil {
+                self.updateData?()
+            }
+        }
+    }
     
     var currentCallStatus: SINCallState {
         return currentCall?.state ?? SINCallState.ended
@@ -55,24 +65,24 @@ class CallManager: NSObject {
         if let call = currentCall {
             calls.append(call)
             currentCall = nil
-            callsChangedHandler?()
+            reloadTable?()
         }
     }
     
     func addIncoming(call: SINCall) {
         calls.append(call)
-        callsChangedHandler?()
+        reloadTable?()
     }
     
     func remove(call: SINCall) {
         guard let index = calls.index(where: { $0 === call }) else { return }
         calls.remove(at: index)
-        callsChangedHandler?()
+        reloadTable?()
     }
     
     func removeAllCalls() {
         calls.removeAll()
-        callsChangedHandler?()
+        reloadTable?()
     }
     
     func end(call: SINCall) {
@@ -86,7 +96,7 @@ class CallManager: NSObject {
             if let error = error {
                 print("Error requesting transaction: \(error.localizedDescription)")
             } else {
-                print("Requested transaction successfully")
+                print("Requested transaction successfully:") // \(transaction.actions.first?.description ?? "")")
             }
         }
     }
@@ -95,6 +105,14 @@ class CallManager: NSObject {
         let setHeldCallAction = CXSetHeldCallAction(call: call.uuid, onHold: onHold)
         let transaction = CXTransaction()
         transaction.addAction(setHeldCallAction)
+        
+        requestTransaction(transaction)
+    }
+    
+    func setMute(call: SINCall, mute: Bool) {
+        let setMuteCallAction = CXSetMutedCallAction(call: call.uuid, muted: mute)
+        let transaction = CXTransaction()
+        transaction.addAction(setMuteCallAction)
         
         requestTransaction(transaction)
     }

@@ -28,16 +28,29 @@ private let callCellIdentifier = "CallCell"
 
 class CallsViewController: UITableViewController {
     
-    var callManager: CallManager!
+    fileprivate var callManager: CallManager!
+    fileprivate var acDelegate: AudioControllerDelegate!
+    fileprivate var users: [String] {
+        let userStruct = Users.list
+        return userStruct.getUserList()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         callManager = AppDelegate.shared.callManager
+        acDelegate = AudioControllerDelegate()
         
-        callManager.callsChangedHandler = {
+        callManager.reloadTable = {
             [unowned self] in
+            print("REFRESHING TABLE")
             self.tableView.reloadData()
+        }
+        
+        callManager.updateData = {
+            [unowned self] in
+            print("Updating delegate")
+            self.callManager.currentCall?.delegate = self
+            self.callManager.client.audioController().delegate = self.acDelegate
         }
     }
     
@@ -45,7 +58,7 @@ class CallsViewController: UITableViewController {
         guard let newCallController = segue.source as? NewCallViewController else { return }
         guard let handle = newCallController.handle, handle != "" else { return }
         callManager.startCall(handle: handle)
-    
+        
     }
 }
 
@@ -77,23 +90,45 @@ extension CallsViewController {
 // MARK - UITableViewDelegate
 
 extension CallsViewController {
+    
     override func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String? {
-        return "End"
+        
+        return "Remove"
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let call = callManager.calls[indexPath.row]
-        // TODO: clarify hold situation with SINkit
-        call.hangup()
-//        call.state = call.state == .held ? .active : .held
-        callManager?.setHeld(call: call, onHold: call.state == .progressing)
+        let onHold = acDelegate.muted ? false : true
+        print("Are we currently muted? \(acDelegate.muted)")
+//        callManager?.setHeld(call: call, onHold: onHold)
+        callManager?.setMute(call: call, mute: onHold)
         
         tableView.reloadData()
     }
 }
 
-extension CallsViewController: SINCallDelegate, SINCallClientDelegate {
+extension CallsViewController: SINCallDelegate {
     
+    func callDidProgress(_ call: SINCall!) {
+        self.tableView.reloadData()
+        print("RINGING")
+    }
+    
+    func callDidEstablish(_ call: SINCall!) {
+        
+        self.tableView.reloadData()
+        print("STARTING CALL")
+    }
+    
+    func callDidEnd(_ call: SINCall!) {
+        callManager.end(call: call)
+        self.tableView.reloadData()
+        print("CALL ENDED")
+    }
+    
+    func call(_ call: SINCall!, shouldSendPushNotifications pushPairs: [Any]!) {
+//        TODO
+    }
     
     
 }
