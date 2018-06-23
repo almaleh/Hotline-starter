@@ -14,8 +14,8 @@ struct Users {
     static var list = Users()
     
     init() {
-        users.append("asdf")
-        users.append("qwer")
+        users.append("Besher's iPhone")
+        users.append("Besher's iPad")
     }
     
     func getUserList() -> [String] {

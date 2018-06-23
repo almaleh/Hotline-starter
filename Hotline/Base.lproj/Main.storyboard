@@ -26,9 +26,9 @@
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u6e-Df-qFD">
-                                            <rect key="frame" x="55" y="11.5" width="42" height="21"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.25" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u6e-Df-qFD">
+                                            <rect key="frame" x="55" y="12.5" width="211" height="19.5"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
@@ -39,8 +39,11 @@
                                                 <constraint firstAttribute="height" constant="32" id="F33-XX-DfN"/>
                                             </constraints>
                                         </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mGv-fA-Q6M">
-                                            <rect key="frame" x="309" y="11.5" width="42" height="21"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mGv-fA-Q6M">
+                                            <rect key="frame" x="271" y="11.5" width="80" height="21"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="80" id="PUI-Tu-ICt"/>
+                                            </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -49,6 +52,7 @@
                                     <constraints>
                                         <constraint firstItem="mGv-fA-Q6M" firstAttribute="centerY" secondItem="u6e-Df-qFD" secondAttribute="centerY" id="12w-Mu-BCB"/>
                                         <constraint firstItem="a6R-0h-YzP" firstAttribute="centerY" secondItem="Y3A-kJ-SFV" secondAttribute="centerY" id="LqB-BD-J1f"/>
+                                        <constraint firstItem="mGv-fA-Q6M" firstAttribute="leading" secondItem="u6e-Df-qFD" secondAttribute="trailing" priority="985" constant="5" id="W1F-S6-vbZ"/>
                                         <constraint firstItem="mGv-fA-Q6M" firstAttribute="trailing" secondItem="Y3A-kJ-SFV" secondAttribute="trailingMargin" constant="-8" id="Wp2-1p-BLk"/>
                                         <constraint firstItem="u6e-Df-qFD" firstAttribute="leading" secondItem="a6R-0h-YzP" secondAttribute="trailing" constant="8" id="fho-l4-AOL"/>
                                         <constraint firstItem="u6e-Df-qFD" firstAttribute="centerY" secondItem="a6R-0h-YzP" secondAttribute="centerY" id="mUG-3N-zF1"/>

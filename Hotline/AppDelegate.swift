@@ -39,7 +39,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
-        user = "asdf"
+        user = "Besher's iPhone"
+        user = "Besher's iPad"
         
         initSinchClientWithUserID(userID: user)
         if let client = client, callManager == nil {
@@ -55,10 +56,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // if logged in
         push?.registerUserNotificationSettings()
-        initSinchClientWithUserID(userID: user)
         
         return true
     }
+
     
     
     func initSinchClientWithUserID (userID: String) {
@@ -79,13 +80,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 extension AppDelegate: SINClientDelegate, SINCallClientDelegate, SINManagedPushDelegate  {
     
     func client(_ client: SINCallClient!, localNotificationForIncomingCall call: SINCall!) -> SINLocalNotification! {
-        return SINLocalNotification()
+        let notification = SINLocalNotification()
+        notification.alertBody = "Answer me!"
+        notification.alertBody = "Incoming call from: \(call.remoteUserId)"
+        return notification
     }
     
     func client(_ client: SINCallClient!, didReceiveIncomingCall call: SINCall!) {
-        providerDelegate?.reportIncomingCall(call
-        )
-        print("Received a call from: \(call.remoteUserId)")
+        callManager?.currentCall = call
+        providerDelegate?.reportIncomingCall(call)
+        
+        print("Received a call from: \(call.remoteUserId ?? "")")
     }
     
     func clientDidStart(_ client: SINClient!) {
@@ -107,11 +112,23 @@ extension AppDelegate: SINClientDelegate, SINCallClientDelegate, SINManagedPushD
     }
     
     func handleRemoteNotification(userInfo: [AnyHashable : Any]) {
-        client?.relayRemotePushNotification(userInfo)
+        
+        let result = client?.relayRemotePushNotification(userInfo)
+        guard let resultIsCall = result?.isCall(), let callCancelled = result?.call().isCallCanceled else { return }
+        if resultIsCall && callCancelled {
+            presentMissedCallNotificationWithRemoteUserId(remoteUserID: result?.call().remoteUserId ?? "")
+        }
+        
+    }
+    
+    func presentMissedCallNotificationWithRemoteUserId(remoteUserID: String) {
+        
     }
     
     func managedPush(_ managedPush: SINManagedPush!, didReceiveIncomingPushWithPayload payload: [AnyHashable : Any]!, forType pushType: String!) {
         handleRemoteNotification(userInfo: payload)
     }
+    
+    
 }
 

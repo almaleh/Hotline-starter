@@ -26,7 +26,7 @@ import CallKit
 class CallManager: NSObject {
     
     var reloadTable: (() -> Void)?
-    var updateData: (() -> Void)?
+    var updateDelegates: (() -> Void)?
     var client: SINClient
     var audioController: SINAudioController {
         return client.audioController()
@@ -38,9 +38,7 @@ class CallManager: NSObject {
     
     var currentCall: SINCall? {
         didSet {
-            if currentCall != nil {
-                self.updateData?()
-            }
+                self.updateDelegates?()
         }
     }
     
@@ -52,6 +50,13 @@ class CallManager: NSObject {
         self.client = client
         super.init()
         
+    }
+    
+    func callWithHandle(_ handle: String) -> SINCall? {
+        guard let index = calls.index(where: { $0.remoteUserId == handle }) else {
+            return nil
+        }
+        return calls[index]
     }
     
     func callWithUUID(uuid: UUID) -> SINCall? {

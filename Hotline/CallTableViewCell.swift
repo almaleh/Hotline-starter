@@ -23,38 +23,48 @@
 import UIKit
 
 class CallTableViewCell: UITableViewCell {
-  
-  var callState: SINCallState? {
-    didSet {
-      guard let callState = callState else { return }
-      
-      switch callState {
-      case .established:
-        callStatusLabel.text = "Active"
-      case .progressing:
-        callStatusLabel.text = "Connecting..."
-      case .ended:
-        callStatusLabel.text = "Ended"
-      default:
-        print(callState.rawValue)
-        callStatusLabel.text = "Dialing..."
-      }
+    
+    var callState: SINCallState? {
+        didSet {
+            guard let callState = callState else { return }
+            
+            switch callState {
+            case .established:
+                callStatusLabel.text = "Active"
+            case .progressing:
+                callStatusLabel.text = "Connecting..."
+            case .ended:
+                callStatusLabel.text = "Ended"
+            case .initiating:
+                callStatusLabel.text = "Initiating..."
+            default:
+                print(callState.rawValue)
+                callStatusLabel.text = "Not available"
+            }
+        }
     }
-  }
-  
-  var incoming: Bool = false {
-    didSet {
-      iconImageView.image = incoming ? #imageLiteral(resourceName: "incoming_arrow") : #imageLiteral(resourceName: "outgoing_arrow")
+    
+    var incoming: Bool = false {
+        didSet {
+            iconImageView.image = incoming ? #imageLiteral(resourceName: "incoming_arrow") : #imageLiteral(resourceName: "outgoing_arrow")
+        }
     }
-  }
-  
-  var callerHandle: String? {
-    didSet {
-      callerHandleLabel.text = callerHandle
+    
+    var callerHandle: String? {
+        didSet {
+            callerHandleLabel.text = callerHandle
+        }
     }
-  }
-
-  @IBOutlet private var iconImageView: UIImageView!
-  @IBOutlet private var callerHandleLabel: UILabel!
-  @IBOutlet private var callStatusLabel: UILabel!
+    
+    func hideIcon(_ hide: Bool) {
+        iconImageView.isHidden = hide
+    }
+    
+    func defaultLabel() {
+        callStatusLabel.text = "Call"
+    }
+    
+    @IBOutlet private var iconImageView: UIImageView!
+    @IBOutlet private var callerHandleLabel: UILabel!
+    @IBOutlet private var callStatusLabel: UILabel!
 }

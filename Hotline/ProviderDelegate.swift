@@ -34,7 +34,6 @@ class ProviderDelegate: NSObject {
     
     static var providerConfiguration: CXProviderConfiguration {
         let providerConfiguration = CXProviderConfiguration(localizedName: "Hotline")
-        
         providerConfiguration.supportsVideo = false
         providerConfiguration.maximumCallGroups = 2
         providerConfiguration.supportedHandleTypes = [.phoneNumber, .generic]
@@ -76,12 +75,11 @@ extension ProviderDelegate: CXProviderDelegate {
             return
         }
         
-        configureAudioSession()
-        
         call.answer()
         
         action.fulfill()
-        callManager.reloadTable?()
+        self.callManager.reloadTable?()
+        
     }
     
     func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
@@ -94,6 +92,12 @@ extension ProviderDelegate: CXProviderDelegate {
         action.fulfill()
         
         callManager.remove(call: call)
+    }
+    
+    func provider(_ provider: CXProvider, execute transaction: CXTransaction) -> Bool {
+        // worth investigating further to add custom functionality
+        callManager.reloadTable?()
+        return false
     }
     
     func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
@@ -113,7 +117,6 @@ extension ProviderDelegate: CXProviderDelegate {
             client.audioController().mute()
         } else {
             client.audioController().unmute()
-            configureAudioSession()
         }
 
         action.fulfill()
@@ -123,7 +126,6 @@ extension ProviderDelegate: CXProviderDelegate {
     func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
         if acDelegate.muted {
             client.audioController().unmute()
-            configureAudioSession()
         } else {
             client.audioController().mute()
         }
@@ -133,9 +135,7 @@ extension ProviderDelegate: CXProviderDelegate {
     
     
     func provider(_ provider: CXProvider, perform action: CXStartCallAction) {
-//        let call = Call(uuid: action.callUUID, outgoing: true, handle: action.handle.value)
         
-//        configureAudioSession()
         print(action.callUUID)
         if callManager.currentCallStatus != .ended {
             action.fulfill()
@@ -163,5 +163,12 @@ extension ProviderDelegate: CXProviderDelegate {
 //        }
     }
     
+    func reportOutgoingStarted(uuid: UUID) {
+        self.provider.reportOutgoingCall(with: uuid, startedConnectingAt: nil)
+    }
+    
+    func reportOutoingConnected(uuid: UUID) {
+        self.provider.reportOutgoingCall(with: uuid, connectedAt: nil)
+    }
     
 }
