@@ -11,6 +11,7 @@ import Foundation
 class AudioControllerDelegate: NSObject, SINAudioControllerDelegate {
     
     var muted: Bool = true
+    var speakerEnabled: Bool = false
     
     func audioControllerMuted(_ audioController: SINAudioController!) {
         self.muted = true
@@ -23,10 +24,14 @@ class AudioControllerDelegate: NSObject, SINAudioControllerDelegate {
     }
     
     func audioControllerSpeakerEnabled(_ audioController: SINAudioController!) {
+        self.speakerEnabled = true
+//        audioController.enableSpeaker()
         print("Speaker enabled!")
     }
     
     func audioControllerSpeakerDisabled(_ audioController: SINAudioController!) {
+        self.speakerEnabled = false
+//        audioController.disableSpeaker()
         print("Speaker disabled!")
     }
     

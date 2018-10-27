@@ -28,11 +28,6 @@ private let callCellIdentifier = "CallCell"
 
 class CallsViewController: UITableViewController {
     
-    fileprivate var callManager: CallManager!
-    fileprivate var acDelegate: AudioControllerDelegate!
-    fileprivate var providerDelegate: ProviderDelegate? {
-        return AppDelegate.shared.providerDelegate
-    }
     fileprivate var users: [String] {
         let userStruct = Users.list
         return userStruct.getUserList()
@@ -40,20 +35,20 @@ class CallsViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        callManager = AppDelegate.shared.callManager
-        acDelegate = AudioControllerDelegate()
         
-        callManager.reloadTable = {
+        CallManager.sharedInstance.reloadTable = {
             [unowned self] in
             print("REFRESHING TABLE")
             self.tableView.reloadData()
         }
         
-        callManager.updateDelegates = {
+        CallManager.sharedInstance.updateDelegates = {
             [unowned self] in
             print("Updating audio delegate")
-            self.callManager.client.audioController().delegate = self.acDelegate
-            self.callManager.currentCall?.delegate = self
+//            CallManager.sharedInstance.client.audioController().delegate = self.acDelegate
+            
+            // QUESTIONABLE LINE, MAY RE-ADD LATER
+//            self.callManager.currentCall?.delegate = self
         }
         
     }
@@ -61,7 +56,7 @@ class CallsViewController: UITableViewController {
     @IBAction private func unwindForNewCall(_ segue: UIStoryboardSegue) {       
         guard let newCallController = segue.source as? NewCallViewController else { return }
         guard let handle = newCallController.handle, handle != "" else { return }
-        callManager.startCall(handle: handle)
+        ProviderDelegate.sharedInstance.startCall(handle: handle)
         
     }
 }
@@ -74,7 +69,7 @@ extension CallsViewController {
         if section == 0 {
             return users.count
         } else {
-            return callManager.calls.count
+            return CallManager.sharedInstance.calls.count
         }
     }
     
@@ -103,7 +98,7 @@ extension CallsViewController {
         if indexPath.section == 0 {
             let remoteUserID = users[indexPath.row]
             cell.callerHandle = remoteUserID
-            if let call = callManager.callWithHandle(remoteUserID) {
+            if let call = CallManager.sharedInstance.callWithHandle(remoteUserID) {
                 cell.callState = call.state
                 cell.incoming = (call.direction == .incoming)
                 cell.hideIcon(false)
@@ -112,7 +107,7 @@ extension CallsViewController {
                 cell.hideIcon(true)
             }
         } else {
-            let call = callManager.calls[indexPath.row]
+            let call = CallManager.sharedInstance.calls[indexPath.row]
             cell.callerHandle = call.uuid.uuidString
             cell.incoming = call.direction == .incoming
             cell.callState = call.state
@@ -122,14 +117,14 @@ extension CallsViewController {
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         let handle = users[indexPath.row]
-        if let call = callManager.callWithHandle(handle) {
-            callManager.end(call: call)
+        if let call = CallManager.sharedInstance.callWithHandle(handle) {
+            ProviderDelegate.sharedInstance.end(call: call)
         }
     }
     
     override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
         let handle = users[indexPath.row]
-        if callManager.callWithHandle(handle) != nil {
+        if CallManager.sharedInstance.callWithHandle(handle) != nil {
             return .delete
         }
         return .none
@@ -153,39 +148,15 @@ extension CallsViewController {
 //        callManager?.setMute(call: call, mute: onHold)
         if indexPath.section == 0 {
             let handle = users[indexPath.row]
-            if callManager.callWithHandle(handle) == nil {
-                callManager.startCall(handle: handle)
+            if CallManager.sharedInstance.callWithHandle(handle) == nil {
+                ProviderDelegate.sharedInstance.startCall(handle: handle)
                 //            tableView.reloadData()
+            } else {
+                if let currentCall = CallManager.sharedInstance.currentCall {
+                    ProviderDelegate.sharedInstance.setMute(call: currentCall, mute: true)
+                }
             }
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }
-}
-
-extension CallsViewController: SINCallDelegate {
-    
-    func callDidProgress(_ call: SINCall!) {
-        self.tableView.reloadData()
-        providerDelegate?.reportOutgoingStarted(uuid: call.uuid)
-        print("RINGING")
-    }
-    
-    func callDidEstablish(_ call: SINCall!) {
-        self.tableView.reloadData()
-        providerDelegate?.reportOutoingConnected(uuid: call.uuid)
-        print("STARTING CALL")
-    }
-    
-    func callDidEnd(_ call: SINCall!) {
-        callManager.end(call: call)
-        
-        self.tableView.reloadData()
-        print("CALL ENDED")
-    }
-    
-    func call(_ call: SINCall!, shouldSendPushNotifications pushPairs: [Any]!) {
-//        TODO
-    }
-    
-    
 }

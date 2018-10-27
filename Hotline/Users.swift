@@ -16,6 +16,12 @@ struct Users {
     init() {
         users.append("Besher's iPhone")
         users.append("Besher's iPad")
+        
+        
+        // remove self user
+        for (index, user) in users.enumerated() {
+            if user == AppDelegate.shared.user { users.remove(at: index)}
+        }
     }
     
     func getUserList() -> [String] {

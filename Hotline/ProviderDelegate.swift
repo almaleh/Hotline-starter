@@ -10,32 +10,44 @@ import Foundation
 import AVFoundation
 import CallKit
 
+private let sharedProviderDelegate = ProviderDelegate()
+
 class ProviderDelegate: NSObject {
 
     
-    fileprivate let callManager: CallManager
-    fileprivate let provider: CXProvider
-    var client: SINClient
+    class var sharedInstance : ProviderDelegate {
+        return sharedProviderDelegate
+    }
+    fileprivate let provider: CXProvider?
+    fileprivate let callController: CXCallController
+    
+    var client: SINClient {
+        return CallManager.sharedInstance.client
+    }
     var acDelegate: AudioControllerDelegate
     
-    init(callManager: CallManager) {
-        self.callManager = callManager
+    override init() {
         provider = CXProvider(configuration: type(of: self).providerConfiguration)
         
         // SINCH STUFF
         self.acDelegate = AudioControllerDelegate()
-        self.client = callManager.client
-        client.audioController().delegate = acDelegate
-        
-        super.init()
+        CallManager.sharedInstance.client.audioController().delegate = acDelegate
        
-        provider.setDelegate(self, queue: nil)
+        callController = CXCallController.init()
+        super.init()
+        
+        provider?.setDelegate(self, queue: nil)
+//        provider.setDelegate(self, queue: nil)
+        
     }
     
     static var providerConfiguration: CXProviderConfiguration {
         let providerConfiguration = CXProviderConfiguration(localizedName: "Hotline")
         providerConfiguration.supportsVideo = false
         providerConfiguration.maximumCallGroups = 2
+        if #available(iOS 11.0, *) {
+            providerConfiguration.includesCallsInRecents = true
+        }
         providerConfiguration.supportedHandleTypes = [.phoneNumber, .generic]
         return providerConfiguration
     }
@@ -48,9 +60,10 @@ class ProviderDelegate: NSObject {
         
         update.remoteHandle = CXHandle(type: .generic, value: handle)
         
-        provider.reportNewIncomingCall(with: uuid, update: update) { error in
+        provider?.reportNewIncomingCall(with: uuid, update: update) { error in
             if error == nil {
-                self.callManager.addIncoming(call: call)
+                call.delegate = self
+                CallManager.sharedInstance.addIncoming(call: call)
             }
         }
     }
@@ -62,15 +75,15 @@ extension ProviderDelegate: CXProviderDelegate {
     func providerDidReset(_ provider: CXProvider) {
         client.audioController().mute()
         
-        for call in callManager.calls {
+        for call in CallManager.sharedInstance.calls {
             call.hangup()
         }
         
-        callManager.removeAllCalls()
+        CallManager.sharedInstance.removeAllCalls()
     }
     
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
-        guard let call = callManager.callWithUUID(uuid: action.callUUID) else {
+        guard let call = CallManager.sharedInstance.callWithUUID(uuid: action.callUUID) else {
             action.fail()
             return
         }
@@ -78,12 +91,12 @@ extension ProviderDelegate: CXProviderDelegate {
         call.answer()
         
         action.fulfill()
-        self.callManager.reloadTable?()
+        CallManager.sharedInstance.reloadTable?()
         
     }
     
     func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
-        guard let call = callManager.callWithUUID(uuid: action.callUUID) else {
+        guard let call = CallManager.sharedInstance.callWithUUID(uuid: action.callUUID) else {
             action.fail()
             return
         }
@@ -91,36 +104,40 @@ extension ProviderDelegate: CXProviderDelegate {
         call.hangup()
         action.fulfill()
         
-        callManager.remove(call: call)
+        CallManager.sharedInstance.remove(call: call)
     }
     
     func provider(_ provider: CXProvider, execute transaction: CXTransaction) -> Bool {
         // worth investigating further to add custom functionality
-        callManager.reloadTable?()
+        CallManager.sharedInstance.reloadTable?()
+        for action in transaction.actions {
+            print(action)
+        }
         return false
     }
     
     func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
         client.call().provider(provider, didActivate: audioSession)
         client.audioController().unmute()
-        callManager.reloadTable?()
+        CallManager.sharedInstance.reloadTable?()
     }
     
     func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
         client.audioController().mute()
-        callManager.reloadTable?()
+        
+        CallManager.sharedInstance.reloadTable?()
     }
     
     func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
         print("Are we holding???: \(action.isOnHold)")
-        if action.isOnHold {
-            client.audioController().mute()
-        } else {
-            client.audioController().unmute()
-        }
+//        if action.isOnHold {
+//            client.audioController().mute()
+//        } else {
+//            client.audioController().unmute()
+//        }
 
         action.fulfill()
-        callManager.reloadTable?()
+        CallManager.sharedInstance.reloadTable?()
     }
     
     func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
@@ -137,9 +154,10 @@ extension ProviderDelegate: CXProviderDelegate {
     func provider(_ provider: CXProvider, perform action: CXStartCallAction) {
         
         print(action.callUUID)
-        if callManager.currentCallStatus != .ended {
+        if CallManager.sharedInstance.currentCallStatus != .ended {
+            CallManager.sharedInstance.currentCall?.delegate = self
             action.fulfill()
-            callManager.addCall()
+            CallManager.sharedInstance.addCall()
         }
 
         
@@ -164,11 +182,104 @@ extension ProviderDelegate: CXProviderDelegate {
     }
     
     func reportOutgoingStarted(uuid: UUID) {
-        self.provider.reportOutgoingCall(with: uuid, startedConnectingAt: nil)
+        provider?.reportOutgoingCall(with: uuid, startedConnectingAt: nil)
     }
     
     func reportOutoingConnected(uuid: UUID) {
-        self.provider.reportOutgoingCall(with: uuid, connectedAt: nil)
+        provider?.reportOutgoingCall(with: uuid, connectedAt: nil)
     }
     
+}
+
+extension ProviderDelegate: SINCallDelegate {
+    
+    
+    func callDidProgress(_ call: SINCall!) {
+        CallManager.sharedInstance.reloadTable?()
+        reportOutgoingStarted(uuid: call.uuid)
+        print("RINGING")
+    }
+    
+    func callDidEstablish(_ call: SINCall!) {
+        CallManager.sharedInstance.reloadTable?()
+        reportOutoingConnected(uuid: call.uuid)
+        print("STARTING CALL")
+    }
+    
+    func callDidEnd(_ call: SINCall!) {
+        end(call: call)
+        
+        CallManager.sharedInstance.reloadTable?()
+        print("CALL ENDED")
+    }
+    
+    func call(_ call: SINCall!, shouldSendPushNotifications pushPairs: [Any]!) {
+        //        TODO
+    }
+    
+}
+
+extension ProviderDelegate {
+    
+    
+    func end(call: SINCall) {
+        let endCallAction = CXEndCallAction(call: call.uuid)
+        let transaction = CXTransaction(action: endCallAction)
+        requestTransaction(transaction)
+    }
+    
+    private func requestTransaction(_ transaction: CXTransaction) {
+        
+        callController.request(transaction, completion: { (error : Error?) in
+            
+            if error != nil {
+                print("\(String(describing: error?.localizedDescription))")
+                //                self.end(call: self.currentCall!)
+            }
+        })
+        
+        
+        
+        //        callController.request(transaction) { error in
+        //            if let error = error {
+        //                print("Error requesting transaction: \(error.localizedDescription)")
+        //            } else {
+        //                print("Requested transaction successfully:") // \(transaction.actions.first?.description ?? "")")
+        //            }
+        //        }
+    }
+    
+    func setHeld(call: SINCall, onHold: Bool) {
+        let setHeldCallAction = CXSetHeldCallAction(call: call.uuid, onHold: onHold)
+        let transaction = CXTransaction()
+        transaction.addAction(setHeldCallAction)
+        
+        requestTransaction(transaction)
+    }
+    
+    func setMute(call: SINCall, mute: Bool) {
+        let setMuteCallAction = CXSetMutedCallAction(call: call.uuid, muted: mute)
+        let transaction = CXTransaction()
+        transaction.addAction(setMuteCallAction)
+        
+        requestTransaction(transaction)
+    }
+    
+    func setSpeaker(call: SINCall, loud: Bool) {
+        
+    }
+    
+    func startCall(handle: String) {
+        
+        CallManager.sharedInstance.currentCall = client.call().callUser(withId: handle)
+        guard let uuid = UUID(uuidString: CallManager.sharedInstance.currentCall?.callId ?? "" ) else {
+            return
+        }
+        
+        let handle = CXHandle(type: CXHandle.HandleType.generic, value: handle)
+        let startCallAction = CXStartCallAction.init(call: uuid, handle: handle)
+        let transaction = CXTransaction.init()
+        transaction.addAction(startCallAction)
+        requestTransaction(transaction)
+    }
 }

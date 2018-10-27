@@ -23,6 +23,8 @@
 import Foundation
 import CallKit
 
+private let sharedManager = CallManager.init()
+
 class CallManager: NSObject {
     
     var reloadTable: (() -> Void)?
@@ -31,10 +33,13 @@ class CallManager: NSObject {
     var audioController: SINAudioController {
         return client.audioController()
     }
+    
+    
+    class var sharedInstance : CallManager {
+        return sharedManager
+    }
 
     private(set) var calls = [SINCall]()
-    
-    private let callController = CXCallController()
     
     var currentCall: SINCall? {
         didSet {
@@ -46,8 +51,18 @@ class CallManager: NSObject {
         return currentCall?.state ?? SINCallState.ended
     }
     
-    init(client: SINClient) {
-        self.client = client
+    override init() {
+        
+        
+            client = Sinch.client(withApplicationKey: APPLICATION_KEY, applicationSecret: APPLICATION_SECRET, environmentHost: "sandbox.sinch.com", userId: AppDelegate.shared.user)
+            client.setSupportCalling(true)
+            client.setSupportMessaging(false)
+            client.enableManagedPushNotifications()
+            client.delegate = AppDelegate.shared // to be reviewed
+            client.call().delegate = AppDelegate.shared // to be discussed
+            client.start()
+            client.startListeningOnActiveConnection()
+        
         super.init()
         
     }
@@ -88,52 +103,5 @@ class CallManager: NSObject {
     func removeAllCalls() {
         calls.removeAll()
         reloadTable?()
-    }
-    
-    func end(call: SINCall) {
-        let endCallAction = CXEndCallAction(call: call.uuid)
-        let transaction = CXTransaction(action: endCallAction)
-        requestTransaction(transaction)
-    }
-    
-    private func requestTransaction(_ transaction: CXTransaction) {
-        callController.request(transaction) { error in
-            if let error = error {
-                print("Error requesting transaction: \(error.localizedDescription)")
-            } else {
-                print("Requested transaction successfully:") // \(transaction.actions.first?.description ?? "")")
-            }
-        }
-    }
-    
-    func setHeld(call: SINCall, onHold: Bool) {
-        let setHeldCallAction = CXSetHeldCallAction(call: call.uuid, onHold: onHold)
-        let transaction = CXTransaction()
-        transaction.addAction(setHeldCallAction)
-        
-        requestTransaction(transaction)
-    }
-    
-    func setMute(call: SINCall, mute: Bool) {
-        let setMuteCallAction = CXSetMutedCallAction(call: call.uuid, muted: mute)
-        let transaction = CXTransaction()
-        transaction.addAction(setMuteCallAction)
-        
-        requestTransaction(transaction)
-    }
-    
-    func startCall(handle: String) {
-        
-        currentCall = client.call().callUser(withId: handle)
-        guard let uuid = UUID(uuidString: currentCall?.callId ?? "" ) else {
-            return
-        }
-        
-        let handle = CXHandle(type: .phoneNumber, value: handle)
-        let startCallAction = CXStartCallAction(call: uuid, handle: handle)
-        
-        let transaction = CXTransaction(action: startCallAction)
-        
-        requestTransaction(transaction)
     }
 }

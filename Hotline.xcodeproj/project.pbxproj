@@ -11,7 +11,7 @@
 		285B694920C6352900F12B29 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 285B694820C6352900F12B29 /* Secrets.swift */; };
 		28B7B74F20BCFE4D00ED4CA4 /* ProviderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B7B74E20BCFE4D00ED4CA4 /* ProviderDelegate.swift */; };
 		28E71A1920CDA037004C7DD4 /* Users.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E71A1820CDA037004C7DD4 /* Users.swift */; };
-		28EB8AF120C9FC4300CF4A95 /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EB8AF020C9FC4300CF4A95 /* PushKit.framework */; };
+		28EB8AF120C9FC4300CF4A95 /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28EB8AF020C9FC4300CF4A95 /* PushKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		BB24136D1E16E45600D8285D /* CallTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB24136C1E16E45600D8285D /* CallTableViewCell.swift */; };
 		BB5C8C8F1E0AE13300029D74 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5C8C8E1E0AE13300029D74 /* AppDelegate.swift */; };
 		BB5C8C941E0AE13300029D74 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB5C8C921E0AE13300029D74 /* Main.storyboard */; };
@@ -437,6 +437,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = S9M2AHXJQE;
 				INFOPLIST_FILE = Hotline/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.besher.Hotline;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -457,6 +458,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = S9M2AHXJQE;
 				INFOPLIST_FILE = Hotline/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.besher.Hotline;
 				PRODUCT_NAME = "$(TARGET_NAME)";
